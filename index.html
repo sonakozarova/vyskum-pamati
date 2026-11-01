@@ -1,1 +1,676 @@
+<!DOCTYPE html>
+<html lang="sk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+  <title>Výskum pamäti</title>
+
+  <style>
+    :root {
+      --cream: #f8f0e9;
+      --cream-light: #fffaf6;
+      --beige: #ead8ca;
+      --brown: #654635;
+      --brown-light: #92715d;
+      --text: #3d2c23;
+      --line: #cdb7a6;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: var(--cream);
+      color: var(--text);
+      font-family: Georgia, "Times New Roman", serif;
+    }
+
+    button {
+      font-family: inherit;
+    }
+
+    /* ÚVODNÁ STRÁNKA */
+
+    #intro {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 35px 22px;
+      background:
+        radial-gradient(
+          ellipse at 0% 0%,
+          #ead7c9 0%,
+          transparent 28%
+        ),
+        radial-gradient(
+          ellipse at 100% 100%,
+          #e9d5c6 0%,
+          transparent 28%
+        ),
+        var(--cream);
+    }
+
+    .page {
+      position: relative;
+      width: 100%;
+      max-width: 1050px;
+      padding: 48px 65px 32px;
+      overflow: hidden;
+      background: rgba(255, 250, 246, 0.5);
+      border: 1px solid rgba(150, 112, 88, 0.18);
+      border-radius: 5px;
+    }
+
+    /* Jemné dekorácie v rohoch */
+
+    .page::before,
+    .page::after {
+      content: "";
+      position: absolute;
+      z-index: 0;
+      pointer-events: none;
+      border-radius: 50%;
+    }
+
+    .page::before {
+      width: 260px;
+      height: 150px;
+      top: -105px;
+      left: -100px;
+      background: rgba(218, 191, 171, 0.32);
+      transform: rotate(-25deg);
+    }
+
+    .page::after {
+      width: 300px;
+      height: 130px;
+      right: -130px;
+      bottom: -95px;
+      background: rgba(218, 191, 171, 0.3);
+      transform: rotate(-25deg);
+    }
+
+    .page-content {
+      position: relative;
+      z-index: 1;
+      max-width: 850px;
+      margin: 0 auto;
+    }
+
+    h1 {
+      margin: 0 0 24px;
+      padding-bottom: 13px;
+      border-bottom: 1px solid var(--brown-light);
+      color: var(--brown);
+      font-size: clamp(39px, 5vw, 58px);
+      line-height: 1.1;
+      font-weight: 700;
+      letter-spacing: -1.5px;
+    }
+
+    .description {
+      font-size: 16px;
+      line-height: 1.5;
+    }
+
+    .description p {
+      margin: 0 0 17px;
+    }
+
+    .description strong {
+      color: var(--brown);
+    }
+
+    .info-line {
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+      margin: 17px 0;
+    }
+
+    .info-icon {
+      flex: 0 0 38px;
+      width: 38px;
+      color: var(--brown-light);
+    }
+
+    .info-icon svg {
+      display: block;
+      width: 36px;
+      height: 36px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 1.5;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .info-text {
+      flex: 1;
+    }
+
+    .thanks {
+      position: relative;
+      z-index: 1;
+      margin-top: 24px;
+      padding-top: 18px;
+      border-top: 1px solid var(--line);
+      color: var(--brown);
+      text-align: center;
+      font-size: 20px;
+      font-style: italic;
+      font-weight: bold;
+    }
+
+    .button-area {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      justify-content: center;
+      margin-top: 18px;
+    }
+
+    .start-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      padding: 13px 30px;
+      border: none;
+      border-radius: 30px;
+      background: var(--brown-light);
+      color: white;
+      font-size: 15px;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.2s;
+    }
+
+    .start-button:hover {
+      background: var(--brown);
+      transform: translateY(-2px);
+    }
+
+    /* VÝSKUMNÝ OBRÁZOK */
+
+    #study {
+      display: none;
+      min-height: 100vh;
+      padding: 35px 20px;
+      text-align: center;
+      background: var(--cream);
+    }
+
+    .study-container {
+      width: 100%;
+      max-width: 1050px;
+      margin: 0 auto;
+    }
+
+    .study-title {
+      margin-bottom: 10px;
+      color: var(--brown);
+      font-size: 30px;
+    }
+
+    .study-instruction {
+      margin-bottom: 25px;
+      font-size: 16px;
+    }
+
+    .timer {
+      margin-bottom: 12px;
+      color: var(--brown);
+      font-size: 29px;
+      font-weight: bold;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .progress-background {
+      width: 100%;
+      max-width: 500px;
+      height: 7px;
+      margin: 0 auto 30px;
+      overflow: hidden;
+      border-radius: 20px;
+      background: #e3d2c5;
+    }
+
+    .progress {
+      width: 100%;
+      height: 100%;
+      border-radius: 20px;
+      background: var(--brown-light);
+      transition: width 0.15s linear;
+    }
+
+    #studyImage {
+      display: block;
+      max-width: 100%;
+      max-height: 68vh;
+      width: auto;
+      height: auto;
+      margin: 0 auto;
+      object-fit: contain;
+      visibility: hidden;
+    }
+
+    .loading-message {
+      margin-top: 20px;
+      color: var(--brown-light);
+    }
+
+    /* DOTAZNÍK */
+
+    #formSection {
+      display: none;
+      min-height: 100vh;
+      padding: 15px;
+      background: var(--cream);
+    }
+
+    #formFrame {
+      display: block;
+      width: 100%;
+      max-width: 950px;
+      min-height: 2100px;
+      margin: 0 auto;
+      border: none;
+      background: white;
+    }
+
+    /* MOBILNÉ ZARIADENIA */
+
+    @media (max-width: 760px) {
+      #intro {
+        padding: 12px;
+        align-items: flex-start;
+      }
+
+      .page {
+        padding: 30px 22px 26px;
+      }
+
+      h1 {
+        font-size: 39px;
+        margin-bottom: 17px;
+      }
+
+      .description {
+        font-size: 14px;
+        line-height: 1.48;
+      }
+
+      .info-line {
+        gap: 11px;
+        margin: 14px 0;
+      }
+
+      .info-icon {
+        flex-basis: 31px;
+        width: 31px;
+      }
+
+      .info-icon svg {
+        width: 30px;
+        height: 30px;
+      }
+
+      .thanks {
+        font-size: 17px;
+      }
+
+      #study {
+        padding: 25px 12px;
+      }
+
+      .study-title {
+        font-size: 25px;
+      }
+
+      #studyImage {
+        max-height: 65vh;
+      }
+
+      #formSection {
+        padding: 8px;
+      }
+
+      #formFrame {
+        min-height: 2300px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- ÚVODNÁ STRÁNKA -->
+
+  <section id="intro">
+
+    <div class="page">
+
+      <div class="page-content">
+
+        <h1>Výskum pamäti</h1>
+
+        <div class="description">
+
+          <p>
+            Vitajte v krátkom výskume, ktorý je súčasťou
+            stredoškolskej odbornej činnosti na tému:
+            <strong><em>Presnosť pamäti a istota v správnosť spomienok.</em></strong>
+          </p>
+
+          <div class="info-line">
+
+            <div class="info-icon">
+              <svg viewBox="0 0 40 40">
+                <path d="M20 5 C14 2 10 7 11 11 C5 11 4 18 8 21 C5 27 10 32 15 30 C18 35 24 33 25 29 C32 31 36 24 32 20 C36 14 30 9 26 11 C26 5 22 3 20 5Z"/>
+                <path d="M20 6 C17 13 22 16 18 22 C15 26 19 29 20 32"/>
+                <path d="M11 13 L17 15 M8 21 L15 21 M15 29 L18 25 M26 12 L22 17 M32 21 L25 23 M25 29 L22 26"/>
+              </svg>
+            </div>
+
+            <div class="info-text">
+              Cieľom výskumu je zistiť, ako presne si ľudia
+              dokážu zapamätať predložené informácie a do akej
+              miery si veria v správnosť svojich spomienok.
+            </div>
+
+          </div>
+
+          <div class="info-line">
+
+            <div class="info-icon">
+              <svg viewBox="0 0 40 40">
+                <rect x="4" y="7" width="32" height="26" rx="3"/>
+                <circle cx="13" cy="15" r="3"/>
+                <path d="M5 29 L15 20 L22 26 L27 21 L35 29"/>
+              </svg>
+            </div>
+
+            <div class="info-text">
+              Vašou úlohou bude najskôr prezrieť si obrázok,
+              ktorý sa Vám zobrazí na 45 sekúnd. Pokúste sa
+              zapamätať si čo najviac jeho detailov. Následne
+              budete presmerovaní na dotazník, v ktorom
+              odpoviete na otázky týkajúce sa obrázka a pri
+              každej odpovedi označíte mieru svojej istoty.
+            </div>
+
+          </div>
+
+          <div class="info-line">
+
+            <div class="info-icon">
+              <svg viewBox="0 0 40 40">
+                <path d="M20 3 L34 9 V19 C34 28 28 34 20 38 C12 34 6 28 6 19 V9Z"/>
+                <path d="M13 20 L18 25 L28 14"/>
+              </svg>
+            </div>
+
+            <div class="info-text">
+              Účasť vo výskume je <strong>dobrovoľná</strong>
+              a dotazník je <strong>anonymný</strong>.
+              Získané odpovede budú použité výhradne na účely tejto SOČ.
+            </div>
+
+          </div>
+
+          <div class="info-line">
+
+            <div class="info-icon">
+              <svg viewBox="0 0 40 40">
+                <path d="M17 4 L3 29 Q1 34 7 35 H33 Q39 34 37 29 L23 4 Q20 -1 17 4Z"/>
+                <path d="M20 12 V23"/>
+                <circle cx="20" cy="29" r="1"/>
+              </svg>
+            </div>
+
+            <div class="info-text">
+              Prosím, odpovedajte samostatne a podľa svojho
+              najlepšieho vedomia. Počas prezerania obrázka
+              si ho nefoťte ani neukladajte.
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+      <div class="thanks">
+        Ďakujem Vám za účasť a Váš čas!
+      </div>
+
+      <div class="button-area">
+        <button class="start-button" onclick="startStudy()">
+          Spustiť výskum <span>→</span>
+        </button>
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- VÝSKUMNÝ OBRÁZOK -->
+
+  <section id="study">
+
+    <div class="study-container">
+
+      <h2 class="study-title">Pozorne si prezrite obrázok</h2>
+
+      <p class="study-instruction" id="studyInstruction">
+        Pripravte sa na prezeranie obrázka.
+      </p>
+
+      <div class="timer" id="timer">00:03</div>
+
+      <div class="progress-background">
+        <div class="progress" id="progress"></div>
+      </div>
+
+      <img
+        id="studyImage"
+        alt="Obrázok určený na zapamätanie"
+      >
+
+      <p class="loading-message" id="loadingMessage">
+        Pripravuje sa obrázok...
+      </p>
+
+    </div>
+
+  </section>
+
+
+  <!-- GOOGLE FORMS DOTAZNÍK -->
+
+  <section id="formSection">
+
+    <iframe
+      id="formFrame"
+      title="Dotazník k výskumu pamäti"
+      loading="eager"
+    ></iframe>
+
+  </section>
+
+
+  <script>
+
+    // NASTAVENIA VÝSKUMU
+
+    const STUDY_IMAGE = "obrazok.png";
+
+    const FORM_URL =
+      "https://docs.google.com/forms/d/e/1FAIpQLScRMpRKbjDYagiTbJDiP5QizhowXymHU4qi3gA9vkTZitPgZg/viewform?embedded=true";
+
+    const PREPARATION_DURATION = 3;
+    const DURATION = 45;
+
+    let preparationInterval = null;
+    let countdownInterval = null;
+    let endTime = null;
+    let studyStarted = false;
+
+
+    // SPUSTENIE VÝSKUMU
+
+    function startStudy() {
+
+      if (studyStarted) {
+        return;
+      }
+
+      studyStarted = true;
+
+      document.getElementById('intro').style.display = 'none';
+      document.getElementById('study').style.display = 'block';
+
+      window.scrollTo(0, 0);
+
+      const image = document.getElementById('studyImage');
+      const message = document.getElementById('loadingMessage');
+
+      image.style.visibility = 'hidden';
+
+      message.style.display = 'block';
+      message.textContent = 'Pripravuje sa obrázok...';
+
+      image.onload = function() {
+        beginPreparation();
+      };
+
+      image.onerror = function() {
+        message.textContent =
+          'Obrázok sa nepodarilo načítať. Skúste obnoviť stránku.';
+      };
+
+      image.src = STUDY_IMAGE;
+
+      if (image.complete && image.naturalWidth > 0) {
+        beginPreparation();
+      }
+    }
+
+
+    // TROJSEKUNDOVÁ PRÍPRAVA
+
+    function beginPreparation() {
+
+      if (preparationInterval !== null || countdownInterval !== null) {
+        return;
+      }
+
+      const message = document.getElementById('loadingMessage');
+
+      message.textContent = 'Pripravte sa...';
+
+      endTime = Date.now() + PREPARATION_DURATION * 1000;
+
+      updatePreparation();
+
+      preparationInterval = setInterval(updatePreparation, 100);
+    }
+
+
+    function updatePreparation() {
+
+      const remaining = Math.max(
+        0,
+        (endTime - Date.now()) / 1000
+      );
+
+      const seconds = Math.ceil(remaining);
+
+      document.getElementById('timer').textContent =
+        '00:' + String(seconds).padStart(2, '0');
+
+      document.getElementById('progress').style.width =
+        (remaining / PREPARATION_DURATION * 100) + '%';
+
+      if (remaining <= 0) {
+
+        clearInterval(preparationInterval);
+        preparationInterval = null;
+
+        document.getElementById('loadingMessage').style.display = 'none';
+
+        document.getElementById('studyImage').style.visibility = 'visible';
+
+        document.getElementById('studyInstruction').textContent =
+          'Pokúste sa zapamätať si čo najviac detailov.';
+
+        beginCountdown();
+      }
+    }
+
+
+    // ODPOČÍTAVANIE 45 SEKÚND
+
+    function beginCountdown() {
+
+      endTime = Date.now() + DURATION * 1000;
+
+      updateCountdown();
+
+      countdownInterval = setInterval(updateCountdown, 100);
+    }
+
+
+    function updateCountdown() {
+
+      const remaining = Math.max(
+        0,
+        (endTime - Date.now()) / 1000
+      );
+
+      const seconds = Math.ceil(remaining);
+
+      document.getElementById('timer').textContent =
+        '00:' + String(seconds).padStart(2, '0');
+
+      document.getElementById('progress').style.width =
+        (remaining / DURATION * 100) + '%';
+
+      if (remaining <= 0) {
+        finishStudy();
+      }
+    }
+
+
+    // AUTOMATICKÉ ZOBRAZENIE DOTAZNÍKA
+
+    function finishStudy() {
+
+      if (countdownInterval === null) {
+        return;
+      }
+
+      clearInterval(countdownInterval);
+      countdownInterval = null;
+
+      const image = document.getElementById('studyImage');
+      image.removeAttribute('src');
+
+      document.getElementById('study').style.display = 'none';
+      document.getElementById('formSection').style.display = 'block';
+
+      document.getElementById('formFrame').src = FORM_URL;
+
+      window.scrollTo(0, 0);
+    }
+
+  </script>
+
+</body>
+</html>
