@@ -679,8 +679,8 @@
 
     function finishStudy() {
 
-      if (countdownInterval === null) {
-        return;
+      if (countdownInterval=== null) {
+        retur
       }
 
       clearInterval(countdownInterval);
@@ -692,9 +692,16 @@
       document.getElementById('study').style.display = 'none';
       document.getElementById('formSection').style.display = 'block';
 
-      document.getElementById('formFrame').src = FORM_URL;
+      const formFrame = document.getElementById('formFrame');
+      const loadingMessage = document.querySelector('.form-loading-message');
 
-      window.scrollTo(0, 0);
+      formFrame.onload = function() {
+        loadingMessage.style.display = 'none';
+      };
+
+formFrame.src = FORM_URL;
+
+window.scrollTo(0, 0);
     }
 
   </script>
