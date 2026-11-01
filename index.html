@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="sk">
 <head>
@@ -65,8 +66,6 @@
       border: 1px solid rgba(150, 112, 88, 0.18);
       border-radius: 5px;
     }
-
-    /* Jemné dekorácie v rohoch */
 
     .page::before,
     .page::after {
@@ -273,6 +272,23 @@
       background: var(--cream);
     }
 
+    .form-loading-message {
+      max-width: 950px;
+      margin: 10px auto 18px;
+      padding: 18px 20px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: var(--cream-light);
+      color: var(--brown);
+      text-align: center;
+      font-size: 15px;
+      line-height: 1.7;
+    }
+
+    .form-loading-message strong {
+      font-size: 17px;
+    }
+
     #formFrame {
       display: block;
       width: 100%;
@@ -338,6 +354,11 @@
 
       #formSection {
         padding: 8px;
+      }
+
+      .form-loading-message {
+        padding: 15px;
+        font-size: 14px;
       }
 
       #formFrame {
@@ -496,6 +517,12 @@
 
   <section id="formSection">
 
+    <div class="form-loading-message">
+      <strong>Dotazník sa načítava…</strong><br>
+      Prosíme, chvíľku počkajte. Načítanie môže trvať niekoľko sekúnd.
+      Stránku neobnovujte a výskum nespúšťajte znova.
+    </div>
+
     <iframe
       id="formFrame"
       title="Dotazník k výskumu pamäti"
@@ -512,7 +539,7 @@
     const STUDY_IMAGE = "obrazok.png.png";
 
     const FORM_URL =
-      "https://docs.google.com/forms/d/e/1FAIpQLScx--PuJpeIOpNR5uGK6rl5Trzwb0hg2TkPqs0SSLg_TiZcnA/viewform?usp=header"
+      "https://docs.google.com/forms/d/e/1FAIpQLScx--PuJpeIOpNR5uGK6rl5Trzwb0hg2TkPqs0SSLg_TiZcnA/viewform?usp=header";
 
     const PREPARATION_DURATION = 3;
     const DURATION = 45;
@@ -668,10 +695,9 @@
       document.getElementById('formFrame').src = FORM_URL;
 
       window.scrollTo(0, 0);
-          }
+    }
 
   </script>
 
 </body>
 </html>
-       
